@@ -1,0 +1,32 @@
+[
+  {
+    "model": "locations.location",
+    "pk": 1,
+    "fields": {
+      "name": "Statue of Liberty",
+      "description": "Iconic statue in New York Harbor",
+      "address": "Liberty Island, New York, NY 10004",
+      "point": "SRID=4326;POINT (-74.0445 40.6892)"
+    }
+  },
+  {
+    "model": "locations.location",
+    "pk": 2,
+    "fields": {
+      "name": "Empire State Building",
+      "description": "102-story Art Deco skyscraper",
+      "address": "20 W 34th St, New York, NY 10001",
+      "point": "SRID=4326;POINT (-73.9857 40.7484)"
+    }
+  },
+  {
+    "model": "locations.location",
+    "pk": 3,
+    "fields": {
+      "name": "Central Park",
+      "description": "Urban park in Manhattan",
+      "address": "New York, NY",
+      "point": "SRID=4326;POINT (-73.9654 40.7829)"
+    }
+  }
+]

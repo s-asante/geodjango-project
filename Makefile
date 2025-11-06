@@ -40,3 +40,54 @@ docker-down:
 
 sample-data:
 	uv run python manage.py load_sample_locations
+
+
+.PHONY: test test-coverage test-verbose test-fast
+
+test:
+	uv run python manage.py test
+
+test-verbose:
+	uv run python manage.py test --verbosity=2
+
+test-fast:
+	uv run python manage.py test --parallel --keepdb
+
+test-coverage:
+	uv run coverage run --source='.' manage.py test
+	uv run coverage report
+	uv run coverage html
+
+.PHONY: test test-coverage test-verbose test-fast test-models test-views test-spatial test-pytest
+
+test:
+	uv run python manage.py test
+
+test-verbose:
+	uv run python manage.py test --verbosity=2
+
+test-fast:
+	uv run python manage.py test --parallel --keepdb
+
+test-models:
+	uv run python manage.py test locations.tests.test_models
+
+test-views:
+	uv run python manage.py test locations.tests.test_views
+
+test-spatial:
+	uv run python manage.py test locations.tests.test_spatial_queries
+
+test-coverage:
+	uv run coverage run --source='.' manage.py test
+	uv run coverage report
+	uv run coverage html
+
+test-pytest:
+	uv run pytest -v
+
+test-pytest-coverage:
+	uv run pytest --cov=locations --cov-report=html --cov-report=term
+
+test-with-settings:
+	DJANGO_SETTINGS_MODULE=geoproject.test_settings uv run python manage.py test
