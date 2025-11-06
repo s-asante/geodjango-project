@@ -1,7 +1,3 @@
-
-Test cases for Location API endpoints
-
-
 from django.urls import reverse
 from rest_framework import status
 from django.contrib.gis.geos import Point
@@ -315,7 +311,7 @@ class LocationViewSetTest(LocationAPITestCase):
         self.assertEqual(response.data['count'], 18)  
 
     def test_location_ordering(self):
-        
+        """Test that locations are ordered by creation date (newest first)"""
         url = reverse('location-list')
         response = self.client.get(url)
         
@@ -323,29 +319,30 @@ class LocationViewSetTest(LocationAPITestCase):
         
         results = response.data['results']
         
+        # For list view, we use LocationListSerializer which doesn't nest in 'properties'
+        # Verify newest location is first
+        self.assertEqual(results[0]['name'], 'Location 3')
         
-        self.assertEqual(results[0]['properties']['name'], 'Location 3')
-
     def test_geojson_format(self):
-        
+        """Test that detail responses are in valid GeoJSON format"""
         url = reverse('location-detail', kwargs={'pk': self.location1.pk})
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         
-        
+        # Verify GeoJSON structure
         self.assertEqual(response.data['type'], 'Feature')
         self.assertIn('geometry', response.data)
         self.assertIn('properties', response.data)
+        self.assertIn('id', response.data)  # id is at root level for GeoFeatureModelSerializer
         
-        
+        # Verify geometry structure
         self.assertEqual(response.data['geometry']['type'], 'Point')
         self.assertIn('coordinates', response.data['geometry'])
         self.assertEqual(len(response.data['geometry']['coordinates']), 2)
         
-        
+        # Verify properties
         properties = response.data['properties']
-        self.assertIn('id', properties)
         self.assertIn('name', properties)
         self.assertIn('description', properties)
         self.assertIn('address', properties)

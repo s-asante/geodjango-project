@@ -1,8 +1,11 @@
 import factory
 from factory.django import DjangoModelFactory
+from faker import Faker
 from django.contrib.gis.geos import Point
 from django.contrib.auth.models import User
 from locations.models import Location
+
+fake = Faker()
 
 
 class UserFactory(DjangoModelFactory):
@@ -10,6 +13,7 @@ class UserFactory(DjangoModelFactory):
     
     class Meta:
         model = User
+        skip_postgeneration_save = True  
     
     username = factory.Sequence(lambda n: f'user{n}')
     email = factory.LazyAttribute(lambda obj: f'{obj.username}@example.com')
@@ -30,6 +34,10 @@ class UserFactory(DjangoModelFactory):
 class AdminUserFactory(UserFactory):
     
     
+    class Meta:
+        model = User
+        skip_postgeneration_save = True  
+    
     is_staff = True
     is_superuser = True
 
@@ -43,23 +51,23 @@ class LocationFactory(DjangoModelFactory):
     name = factory.Faker('company')
     description = factory.Faker('text', max_nb_chars=200)
     address = factory.Faker('address')
-    point = factory.LazyFunction(
-        lambda: Point(
-            factory.Faker('longitude').generate(),
-            factory.Faker('latitude').generate(),
-            srid=4326
-        )
-    )
+    
+    @factory.lazy_attribute
+    def point(self):
+        
+        lon = fake.longitude()
+        lat = fake.latitude()
+        return Point(float(lon), float(lat), srid=4326)
 
 
 class NYCLocationFactory(LocationFactory):
     
     
-    point = factory.LazyFunction(
-        lambda: Point(
-            factory.Faker('pyfloat', min_value=-74.1, max_value=-73.9).generate(),
-            factory.Faker('pyfloat', min_value=40.6, max_value=40.9).generate(),
-            srid=4326
-        )
-    )
-    address = factory.Faker('street_address', locale='en_US')
+    @factory.lazy_attribute
+    def point(self):
+        
+        lon = fake.pyfloat(min_value=-74.1, max_value=-73.9)
+        lat = fake.pyfloat(min_value=40.6, max_value=40.9)
+        return Point(lon, lat, srid=4326)
+    
+    address = factory.Faker('street_address')

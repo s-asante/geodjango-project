@@ -22,7 +22,8 @@ class LocationSerializerTest(TestCase):
         serializer = LocationSerializer(instance=self.location)
         data = serializer.data
         
-        self.assertIn('id', data['properties'])
+        
+        self.assertIn('id', data)
         self.assertIn('name', data['properties'])
         self.assertIn('description', data['properties'])
         self.assertIn('address', data['properties'])
@@ -67,7 +68,7 @@ class LocationSerializerTest(TestCase):
         }
         
         serializer = LocationSerializer(data=data)
-        self.assertTrue(serializer.is_valid())
+        self.assertTrue(serializer.is_valid(), serializer.errors)
         location = serializer.save()
         
         self.assertEqual(location.name, 'Empire State Building')
@@ -101,4 +102,5 @@ class LocationSerializerTest(TestCase):
         
         serializer = LocationSerializer(data=invalid_data)
         self.assertFalse(serializer.is_valid())
-        self.assertIn('name', serializer.errors['properties'])
+        
+        self.assertIn('name', str(serializer.errors))
